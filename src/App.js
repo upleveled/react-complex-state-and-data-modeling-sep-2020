@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './App.css';
 
 // An employee list with name, job position, and administrative role - "editor", "admin", "no rights"
 
@@ -22,18 +21,41 @@ const employee2 = {
 
 export default function App() {
   const [employeeList, setEmployeeList] = useState([employee1, employee2]);
-  return (
-    <div className="App">
-      <ul>
-        {employeeList.map((employee) => {
-          return (
-            <li key={employee.id}>
-              {employee.name}, {employee.administrativeRole}
-            </li>
-          );
-        })}
-      </ul>
+  const [filter, setFilter] = useState('unfiltered');
 
+  // Deriving State instead of extra state variable
+  const visibleEmployeeList = employeeList.filter((employee) => {
+    if (filter === 'editor' && employee.administrativeRole !== 'editor') {
+      return false;
+    }
+    return true;
+  });
+
+  return (
+    <div>
+      <ul>
+        {visibleEmployeeList.map((employee) => (
+          <li key={employee.id}>
+            {employee.name}, {employee.administrativeRole}
+          </li>
+        ))}
+
+        {
+          // This can also be done directly inside of the .map
+          // function, which was the version that we started with
+          //
+          // employeeList.map((employee) => {
+          //   if (filter === 'editor' && employee.administrativeRole !== 'editor') {
+          //     return null;
+          //   }
+          //   return (
+          //     <li key={employee.id}>
+          //       {employee.name}, {employee.administrativeRole}
+          //     </li>
+          //   );
+          // })
+        }
+      </ul>
       <button
         onClick={() => {
           // Create a copy and mutate the new array
@@ -65,6 +87,36 @@ export default function App() {
         }}
       >
         Change Karl to editor
+      </button>{' '}
+      <button
+        onClick={() => {
+          setEmployeeList([
+            ...employeeList.map((employee) => {
+              if (employee.id === 'f398hf93-2r38u2983ur') {
+                employee.administrativeRole = 'unprivileged';
+              }
+
+              return employee;
+            }),
+          ]);
+        }}
+      >
+        Change Karl to unprivileged
+      </button>
+      <br />
+      <button
+        onClick={() => {
+          setFilter('editor');
+        }}
+      >
+        Show only Editors
+      </button>{' '}
+      <button
+        onClick={() => {
+          setFilter('unfiltered');
+        }}
+      >
+        Reset Filter
       </button>
     </div>
   );
